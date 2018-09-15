@@ -3,7 +3,7 @@
 ## Get Started
 ````
 // Install dependencies
-[insert how]
+yarn install
 
 // Run in development
 yarn run webpack-dev-server
