@@ -1,0 +1,19 @@
+{
+  "name": "Phaser-test-game",
+  "version": "1.0.0",
+  "description": "Just a test",
+  "author": "Tom Hedenström",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "babel-core": "6",
+    "babel-loader": "7",
+    "babel-preset-env": "^1.7.0",
+    "copy-webpack-plugin": "^4.5.2",
+    "webpack": "3",
+    "webpack-dev-server": "2"
+  },
+  "dependencies": {
+    "phaser": "3"
+  }
+}
