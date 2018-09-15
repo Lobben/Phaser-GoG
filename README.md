@@ -1,9 +1,11 @@
 # Phaser-GoG
 
-## Get Started
-````
-// Install dependencies
-yarn install
+## Installing / Getting started
+- Install Node.js
+- Install Yarn
 
-// Run in development
-yarn run webpack-dev-server
+### Install dependencies
+`yarn install`
+
+### Install dependencies
+`yarn run webpack-dev-server`
