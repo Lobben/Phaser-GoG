@@ -5,7 +5,9 @@ export class SimpleScene extends Phaser.Scene {
 		this.load.image('map', 'assets/map.jpg');
 	}
 	create() {
-		this.add.image(0, 0, 'map').setOrigin(0);
+		this.map = this.add.image(0, 0, 'map').setOrigin(0).setInteractive();
+		this.map.name = "map";
+		
 		var cursors = this.input.keyboard.createCursorKeys();
 
 		var controlConfig = {
@@ -30,17 +32,35 @@ export class SimpleScene extends Phaser.Scene {
 
 		this.vertices = [];
 
-		this.input.on('pointerdown', function (pointer) {
-			this.vertices.push(new Vertex(pointer.worldX, pointer.worldY));
+		this.input.setTopOnly(true);
 
-			var graphics = this.add.graphics({ fillStyle: { color: 0xff0000 } });
-			var circle = new Phaser.Geom.Circle(pointer.worldX, pointer.worldY, 12);
-			graphics.fillCircleShape(circle);	
+		//  Events
+		this.input.on('gameobjectdown', function (pointer, gameObject) {
+			if (gameObject.name === "map") {
+				var vertice = new Vertex(pointer.worldX, pointer.worldY, this);
+				this.vertices.push(vertice);
+				this.activateDragAndDrop(vertice);
+			}
+			else if (gameObject.name === "vertex") {
+				this.activateDragAndDrop(gameObject);
+			}
 
 		}, this);
 	}
 
 	update(time, delta) {
 		this.game.controls.update(delta);
+
+		if (this.attachedToPointer != null) {
+			var pointer = this.input.activePointer;
+			this.attachedToPointer.setPosition(pointer.worldX, pointer.worldY);
+		}
+	}
+
+	activateDragAndDrop(gameObject) {
+		this.attachedToPointer = gameObject;
+		this.attachedToPointer.once('pointerup', function (pointer) {
+			this.scene.attachedToPointer = null;
+		})
 	}
 }

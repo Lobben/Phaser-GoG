@@ -1,17 +1,17 @@
-export class Vertex {
-    constructor(x, y) {
-        this.position = { x: x, y: y };
-    }
+import 'phaser';
 
-    get position() {
-        return {
-            x: this.x,
-            y: this.y
-        }
-    }
+export class Vertex extends Phaser.GameObjects.Graphics {
+    constructor(x, y, scene) {
+        super(scene, { fillStyle: { color: 0xff0000 } });
 
-    set position(position) {
-        this.x = position.x;
-        this.y = position.y;
+        var circle = new Phaser.Geom.Circle(0, 0, 12);
+        this.fillCircleShape(circle);
+        this.setInteractive(circle, Phaser.Geom.Circle.Contains);
+
+        this.scene.add.existing(this);
+        this.name = "vertex"
+
+        this.x = x;
+        this.y = y;
     }
 }
