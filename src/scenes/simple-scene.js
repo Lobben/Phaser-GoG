@@ -1,3 +1,5 @@
+import { Vertex } from '../vertex'
+
 export class SimpleScene extends Phaser.Scene {
 	preload() {
 		this.load.image('map', 'assets/map.jpg');
@@ -25,6 +27,17 @@ export class SimpleScene extends Phaser.Scene {
 		var mapHeight = mapTexture.getSourceImage().height;
 
 		this.cameras.main.setBounds(0, 0, mapWidht, mapHeight);
+
+		this.vertices = [];
+
+		this.input.on('pointerdown', function (pointer) {
+			this.vertices.push(new Vertex(pointer.worldX, pointer.worldY));
+
+			var graphics = this.add.graphics({ fillStyle: { color: 0xff0000 } });
+			var circle = new Phaser.Geom.Circle(pointer.worldX, pointer.worldY, 12);
+			graphics.fillCircleShape(circle);	
+
+		}, this);
 	}
 
 	update(time, delta) {
