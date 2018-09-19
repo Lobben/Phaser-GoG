@@ -3,10 +3,7 @@ export class SimpleScene extends Phaser.Scene {
 		this.load.image('map', 'assets/map.jpg');
 	}
 	create() {
-		//this.add.text(100, 100, 'Hello Phaser!', { fill: '#0f0' });
-		this.add.image(0, 0, 'map').setOrigin(0, 0);
-
-
+		this.add.image(0, 0, 'map').setOrigin(0);
 		var cursors = this.input.keyboard.createCursorKeys();
 
 		var controlConfig = {
@@ -17,15 +14,20 @@ export class SimpleScene extends Phaser.Scene {
 			down: cursors.down,
 			zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
 			zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-			acceleration: 0.06,
-			drag: 0.0005,
+			acceleration: 0.2,
+			drag: 0.005,
 			maxSpeed: 1.0
 		};
 
-		game.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+		this.game.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+		var mapTexture = this.textures.get('map');
+		var mapWidht = mapTexture.getSourceImage().width;
+		var mapHeight = mapTexture.getSourceImage().height;
+
+		this.cameras.main.setBounds(0, 0, mapWidht, mapHeight);
 	}
 
 	update(time, delta) {
-		controls.update(delta);
+		this.game.controls.update(delta);
 	}
 }
