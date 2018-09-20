@@ -1,12 +1,36 @@
 import { Vertex } from '../vertex'
 
 export class SimpleScene extends Phaser.Scene {
+	get activeMode() {
+		return this._activeMode;
+	}
+	set activeMode(mode) {
+		var activeColor = "#EE00FF";
+
+		if (this._activeMode == null) {
+			this.modeTextObjects[mode].setBackgroundColor(activeColor);
+		}
+		else if (this._activeMode !== mode) {
+			this.modeTextObjects[mode].setBackgroundColor(activeColor);
+			this.modeTextObjects[this._activeMode].setBackgroundColor(null);
+		}
+		this._activeMode = mode;
+	}
+
 	preload() {
 		this.load.image('map', 'assets/map.jpg');
 	}
+
 	create() {
 		this.map = this.add.image(0, 0, 'map').setOrigin(0).setInteractive();
 		this.map.name = "map";
+
+		this.modeTextObjects = []
+		this.modeTextObjects.push(this.add.text(10, 0, "vertex").setOrigin(0).setScrollFactor(0).setName("vertexText"));
+		this.modeTextObjects.push(this.add.text(80, 0, "edge").setOrigin(0).setScrollFactor(0).setName("edgeText"));
+		
+		this.modesEnum = Object.freeze({ "vertex": 0, "edge": 1 });
+		this.activeMode = this.modesEnum.vertex;
 		
 		var cursors = this.input.keyboard.createCursorKeys();
 
@@ -36,15 +60,18 @@ export class SimpleScene extends Phaser.Scene {
 
 		//  Events
 		this.input.on('gameobjectdown', function (pointer, gameObject) {
-			if (gameObject.name === "map") {
-				var vertice = new Vertex(pointer.worldX, pointer.worldY, this);
-				this.vertices.push(vertice);
-				this.activateDragAndDrop(vertice);
-			}
-			else if (gameObject.name === "vertex") {
-				this.activateDragAndDrop(gameObject);
+			if (this.activeMode === this.modesEnum.vertex) {
+				this.gameObjectDownInVertexMode(pointer, gameObject);
 			}
 
+		}, this);
+
+		this.input.keyboard.on('keydown_ONE', function (event) {
+			this.activeMode = this.modesEnum.vertex;
+		}, this);
+
+		this.input.keyboard.on('keydown_TWO', function (event) {
+			this.activeMode = this.modesEnum.edge;
 		}, this);
 	}
 
@@ -62,5 +89,16 @@ export class SimpleScene extends Phaser.Scene {
 		this.attachedToPointer.once('pointerup', function (pointer) {
 			this.scene.attachedToPointer = null;
 		})
+	}
+
+	gameObjectDownInVertexMode(pointer, gameObject) {
+		if (gameObject.name === "map") {
+			var vertice = new Vertex(pointer.worldX, pointer.worldY, this);
+			this.vertices.push(vertice);
+			this.activateDragAndDrop(vertice);
+		}
+		else if (gameObject.name === "vertex") {
+			this.activateDragAndDrop(gameObject);
+		}
 	}
 }
