@@ -1,4 +1,5 @@
 import { Vertex } from '../vertex'
+import { Edge } from '../edge'
 
 export class GameboardScene extends Phaser.Scene {
 	constructor() {
@@ -27,10 +28,9 @@ export class GameboardScene extends Phaser.Scene {
 	}
 
 	create() {
+		// Resources
 		this.map = this.add.image(0, 0, 'map').setOrigin(0).setInteractive();
 		this.map.name = "map";
-
-		var cursors = this.input.keyboard.createCursorKeys();
 
 		var controlConfig = {
 			camera: this.cameras.main,
@@ -44,18 +44,19 @@ export class GameboardScene extends Phaser.Scene {
 			drag: 0.005,
 			maxSpeed: 1.0
 		};
-
 		this.game.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+
+		// Set camera bounds to map 
 		var mapTexture = this.textures.get('map');
 		var mapWidht = mapTexture.getSourceImage().width;
 		var mapHeight = mapTexture.getSourceImage().height;
-
 		this.cameras.main.setBounds(0, 0, mapWidht, mapHeight);
 
 		this.modesEnum = Object.freeze({ "vertex": 0, "edge": 1 });
 		this.activeMode = this.modesEnum.vertex;
 
 		this.vertices = [];
+		this.edges = [];
 
 		this.input.setTopOnly(true);
 
@@ -63,6 +64,10 @@ export class GameboardScene extends Phaser.Scene {
 		this.input.on('gameobjectdown', function (pointer, gameObject) {
 			if (this.activeMode === this.modesEnum.vertex) {
 				this.gameObjectDownInVertexMode(pointer, gameObject);
+			}
+			else if(this.activeMode === this.modesEnum.edge)
+			{
+				this.gameObjectDownInEdgeMode(pointer, gameObject);
 			}
 
 		}, this);
@@ -82,6 +87,7 @@ export class GameboardScene extends Phaser.Scene {
 		if (this.attachedToPointer != null) {
 			var pointer = this.input.activePointer;
 			this.attachedToPointer.setPosition(pointer.worldX, pointer.worldY);
+			this.attachedToPointer.emit('updatedPosition');
 		}
 	}
 
@@ -100,6 +106,19 @@ export class GameboardScene extends Phaser.Scene {
 		}
 		else if (gameObject.name === "vertex") {
 			this.activateDragAndDrop(gameObject);
+		}
+	}
+
+	gameObjectDownInEdgeMode(pointer, gameObjectDown) {
+		if (gameObjectDown.name === "vertex")
+		{
+			this.input.once('gameobjectup', function (pointer, gameObjectUp) {
+				if (gameObjectUp.name === "vertex" && gameObjectDown !== gameObjectUp) {
+					var edge = new Edge(gameObjectDown,gameObjectUp, this);
+					this.edges.push(edge);
+				}
+	
+			}, this);
 		}
 	}
 }
