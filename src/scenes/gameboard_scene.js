@@ -1,20 +1,25 @@
 import { Vertex } from '../vertex'
 
-export class SimpleScene extends Phaser.Scene {
+export class GameboardScene extends Phaser.Scene {
+	constructor() {
+		super('GameboardScene');
+	}
+
 	get activeMode() {
 		return this._activeMode;
 	}
 	set activeMode(mode) {
-		var activeColor = "#EE00FF";
-
-		if (this._activeMode == null) {
-			this.modeTextObjects[mode].setBackgroundColor(activeColor);
+		if (mode !== this._activeMode) {
+			this._activeMode = mode;
+			switch (mode) {
+				case this.modesEnum.vertex:
+					this.events.emit('editModeChange', 'vertex');
+					break;
+				case this.modesEnum.edge:
+					this.events.emit('editModeChange', 'edge');
+					break;
+			}
 		}
-		else if (this._activeMode !== mode) {
-			this.modeTextObjects[mode].setBackgroundColor(activeColor);
-			this.modeTextObjects[this._activeMode].setBackgroundColor(null);
-		}
-		this._activeMode = mode;
 	}
 
 	preload() {
@@ -25,21 +30,14 @@ export class SimpleScene extends Phaser.Scene {
 		this.map = this.add.image(0, 0, 'map').setOrigin(0).setInteractive();
 		this.map.name = "map";
 
-		this.modeTextObjects = []
-		this.modeTextObjects.push(this.add.text(10, 0, "vertex").setOrigin(0).setScrollFactor(0).setName("vertexText"));
-		this.modeTextObjects.push(this.add.text(80, 0, "edge").setOrigin(0).setScrollFactor(0).setName("edgeText"));
-		
-		this.modesEnum = Object.freeze({ "vertex": 0, "edge": 1 });
-		this.activeMode = this.modesEnum.vertex;
-		
 		var cursors = this.input.keyboard.createCursorKeys();
 
 		var controlConfig = {
 			camera: this.cameras.main,
-			left: cursors.left,
-			right: cursors.right,
-			up: cursors.up,
-			down: cursors.down,
+			left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+			right: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+			up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+			down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
 			zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
 			zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
 			acceleration: 0.2,
@@ -53,6 +51,9 @@ export class SimpleScene extends Phaser.Scene {
 		var mapHeight = mapTexture.getSourceImage().height;
 
 		this.cameras.main.setBounds(0, 0, mapWidht, mapHeight);
+
+		this.modesEnum = Object.freeze({ "vertex": 0, "edge": 1 });
+		this.activeMode = this.modesEnum.vertex;
 
 		this.vertices = [];
 
