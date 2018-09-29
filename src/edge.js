@@ -11,6 +11,8 @@ export class Edge extends Phaser.GameObjects.Graphics {
         
         this.firstVertex.on('updatedPosition', this.drawLine, this);
         this.secondVertex.on('updatedPosition', this.drawLine, this);
+        this.firstVertex.on('destroy', this.destroy, this);
+        this.secondVertex.on('destroy', this.destroy, this);
 
         this.scene.add.existing(this);
         this.name = "edge"

@@ -45,7 +45,8 @@ export class GameboardScene extends Phaser.Scene {
 			maxSpeed: 1.0
 		};
 		this.game.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
-
+		this.deleteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ALT);
+		
 		// Set camera bounds to map 
 		var mapTexture = this.textures.get('map');
 		var mapWidht = mapTexture.getSourceImage().width;
@@ -65,8 +66,7 @@ export class GameboardScene extends Phaser.Scene {
 			if (this.activeMode === this.modesEnum.vertex) {
 				this.gameObjectDownInVertexMode(pointer, gameObject);
 			}
-			else if(this.activeMode === this.modesEnum.edge)
-			{
+			else if (this.activeMode === this.modesEnum.edge) {
 				this.gameObjectDownInEdgeMode(pointer, gameObject);
 			}
 
@@ -105,19 +105,23 @@ export class GameboardScene extends Phaser.Scene {
 			this.activateDragAndDrop(vertice);
 		}
 		else if (gameObject.name === "vertex") {
-			this.activateDragAndDrop(gameObject);
+			if (this.deleteKey.isDown) {
+				gameObject.destroy();
+			}
+			else { 
+				this.activateDragAndDrop(gameObject);
+			}
 		}
 	}
 
 	gameObjectDownInEdgeMode(pointer, gameObjectDown) {
-		if (gameObjectDown.name === "vertex")
-		{
+		if (gameObjectDown.name === "vertex") {
 			this.input.once('gameobjectup', function (pointer, gameObjectUp) {
 				if (gameObjectUp.name === "vertex" && gameObjectDown !== gameObjectUp) {
-					var edge = new Edge(gameObjectDown,gameObjectUp, this);
+					var edge = new Edge(gameObjectDown, gameObjectUp, this);
 					this.edges.push(edge);
 				}
-	
+
 			}, this);
 		}
 	}

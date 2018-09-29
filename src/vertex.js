@@ -14,4 +14,9 @@ export class Vertex extends Phaser.GameObjects.Graphics {
         this.x = x;
         this.y = y;
     }
+
+    destroy() {
+        this.emit("destroy");
+        super.destroy();
+    }
 }
