@@ -56,9 +56,6 @@ export class GameboardScene extends Phaser.Scene {
 		this.modesEnum = Object.freeze({ "vertex": 0, "edge": 1 });
 		this.activeMode = this.modesEnum.vertex;
 
-		this.vertices = [];
-		this.edges = [];
-
 		this.input.setTopOnly(true);
 
 		//  Events
@@ -101,7 +98,6 @@ export class GameboardScene extends Phaser.Scene {
 	gameObjectDownInVertexMode(pointer, gameObject) {
 		if (gameObject.name === "map") {
 			var vertice = new Vertex(pointer.worldX, pointer.worldY, this);
-			this.vertices.push(vertice);
 			this.activateDragAndDrop(vertice);
 		}
 		else if (gameObject.name === "vertex") {
@@ -119,7 +115,6 @@ export class GameboardScene extends Phaser.Scene {
 			this.input.once('gameobjectup', function (pointer, gameObjectUp) {
 				if (gameObjectUp.name === "vertex" && gameObjectDown !== gameObjectUp) {
 					var edge = new Edge(gameObjectDown, gameObjectUp, this);
-					this.edges.push(edge);
 				}
 
 			}, this);
